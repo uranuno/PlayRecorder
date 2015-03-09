@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d792685a1c66445eebd2cebcb1df839c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  directory: Captures/
+  directory: 
   nameFormat: yyyyMMdd-HHmmss-fff
   extension: png
   continuous: 1
@@ -58,4 +58,3 @@ Prefab:
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 169644}
   m_IsPrefabParent: 1
-  m_IsExploded: 1
