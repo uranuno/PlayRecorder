@@ -14,7 +14,7 @@ public class PlayRecorder : MonoBehaviour {
 
 	[SerializeField] bool recording = false;
 
-	public string status = "PlayMode Only!";
+	public string status = "";
 	public MessageType statusType = MessageType.None;
 
 	public float frameCountPerShot {
@@ -36,12 +36,23 @@ public class PlayRecorder : MonoBehaviour {
 	}
 
 	public void StartRecording (bool state) {
+
 		recording = state;
+		
 		if (recording) {
-			Capture ();
 			if (continuous) {
-				frameCount = 0;
+				// Continuous Shot
+				if (!Application.isPlaying) {
+					status = "Continuous Shot is PlayMode Only!";
+					statusType = MessageType.Warning;
+					recording = false;
+				} else {
+					Capture ();
+					frameCount = 0;
+				}
 			} else {
+				// One Shot
+				Capture ();
 				recording = false;
 			}
 		} else {
