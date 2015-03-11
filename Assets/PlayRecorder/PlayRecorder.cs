@@ -5,6 +5,12 @@ using UnityEditor;
 
 public class PlayRecorder : MonoBehaviour {
 
+	public enum StatusType {
+		None,
+		Info,
+		Warning
+	}
+
 	public string directory = "";
 	public string nameFormat = "yyyyMMdd-HHmmss-fff";
 	public string extension = "png";
@@ -15,7 +21,7 @@ public class PlayRecorder : MonoBehaviour {
 	[SerializeField] bool recording = false;
 
 	public string status = "";
-	public MessageType statusType = MessageType.None;
+	public StatusType statusType = StatusType.None;
 
 	public float frameCountPerShot {
 		get {
@@ -44,7 +50,7 @@ public class PlayRecorder : MonoBehaviour {
 				// Continuous Shot
 				if (!Application.isPlaying) {
 					status = "Continuous Shot is PlayMode Only!";
-					statusType = MessageType.Warning;
+					statusType = StatusType.Warning;
 					recording = false;
 				} else {
 					Capture ();
@@ -57,7 +63,7 @@ public class PlayRecorder : MonoBehaviour {
 			}
 		} else {
 			status = "Idle...";
-			statusType = MessageType.None;
+			statusType = StatusType.None;
 		}
 	}
 
@@ -75,7 +81,7 @@ public class PlayRecorder : MonoBehaviour {
 		Application.CaptureScreenshot (path);
 		
 		status = "Captured!\n" + path;
-		statusType = MessageType.Info;
+		statusType = StatusType.Info;
 	}
 }
 
