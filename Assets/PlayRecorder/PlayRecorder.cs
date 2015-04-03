@@ -23,19 +23,7 @@ public class PlayRecorder : MonoBehaviour {
 	public string status = "";
 	public StatusType statusType = StatusType.None;
 
-	public float frameCountPerShot {
-		get {
-			return delay * 0.01f * 60f;
-		}
-	}
-
-	public float shotPerSec {
-		get {
-			return 1 / (delay * 0.01f);
-		}
-	}
-
-	int frameCount = 0;
+	float accum = 0;
 
 	void Start () {
 		StartRecording (false);
@@ -48,13 +36,10 @@ public class PlayRecorder : MonoBehaviour {
 		if (recording) {
 			if (continuous) {
 				// Continuous Shot
-				if (!Application.isPlaying) {
-					status = "Continuous Shot is PlayMode Only!";
+				if (!Application.isPlaying || EditorApplication.isPaused) {
+					status = "Continuous shot is enabled on PlayMode only!";
 					statusType = StatusType.Warning;
 					recording = false;
-				} else {
-					Capture ();
-					frameCount = 0;
 				}
 			} else {
 				// One Shot
@@ -69,10 +54,11 @@ public class PlayRecorder : MonoBehaviour {
 
 	void Update () {
 		if (recording) {
-			if (frameCount++ >= frameCountPerShot) {
+			if (accum >= delay * 0.01f) {
 				Capture ();
-				frameCount = 0;
+				accum = 0;
 			}
+			accum += Time.deltaTime;
 		}
 	}
 
@@ -174,8 +160,6 @@ public class PlayRecorderEditor : Editor {
 		
 		continuousProp.boolValue = EditorGUILayout.BeginToggleGroup ("Continuous Shot :", continuousProp.boolValue);
 		delayProp.floatValue = EditorGUILayout.FloatField ("Delay(ms) :", delayProp.floatValue);
-		EditorGUILayout.LabelField ("Shot / 1Sec :", target.shotPerSec.ToString());
-		EditorGUILayout.LabelField ("Frame Count / 1Shot :", target.frameCountPerShot.ToString());
 		EditorGUILayout.EndToggleGroup ();
 
 		bool recording = recordingProp.boolValue;
