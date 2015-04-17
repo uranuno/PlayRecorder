@@ -118,7 +118,7 @@ public class PlayRecorderEditor : Editor {
 	}
 
 	void DrawPathEditor () {
-		GUILayout.Label ("Saved Path", EditorStyles.boldLabel);
+		GUILayout.Label ("File Path", EditorStyles.boldLabel);
 
 		string directory = directoryProp.stringValue;
 		string nameFormat = nameFormatProp.stringValue;
