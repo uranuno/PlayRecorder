@@ -8,7 +8,7 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 419294}
-  - 114: {fileID: 11495014}
+  - 114: {fileID: 11497370}
   m_Layer: 0
   m_Name: PlayRecorder
   m_TagString: Untagged
@@ -28,7 +28,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
---- !u!114 &11495014
+--- !u!114 &11497370
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -42,9 +42,9 @@ MonoBehaviour:
   directory: 
   nameFormat: yyyyMMdd-HHmmss-fff
   extension: png
-  continuous: 1
   delay: 10
-  recording: 0
+  oneShot: 0
+  isRecording: 0
   status: 
   statusType: 0
 --- !u!1001 &100100000

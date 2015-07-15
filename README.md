@@ -7,7 +7,7 @@
 [Image Magick](http://www.imagemagick.org/)
 
 ```
-convert -delay 6 -colors 16 *.png out.gif
+convert -delay 10 -colors 16 *.png out.gif
 ```
 
 ![Result](http://uranuno.github.io/PlayRecorder/out.gif)

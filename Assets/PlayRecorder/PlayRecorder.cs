@@ -15,50 +15,50 @@ public class PlayRecorder : MonoBehaviour {
 	public string nameFormat = "yyyyMMdd-HHmmss-fff";
 	public string extension = "png";
 
-	public bool continuous = true;
 	public float delay = 10f;
+	public bool oneShot = false;
 
-	[SerializeField] bool recording = false;
+	public int framerate {
+		get { return (int)(1f / (delay*0.01f)); }
+	}
+
+	[SerializeField] bool isRecording = false;
 
 	public string status = "";
 	public StatusType statusType = StatusType.None;
 
-	float accum = 0;
-
 	void Start () {
-		StartRecording (false);
+		StopRecording ();
 	}
 
-	public void StartRecording (bool state) {
-
-		recording = state;
+	public void StopRecording () {
+		isRecording = false;
 		
-		if (recording) {
-			if (continuous) {
-				// Continuous Shot
-				if (!Application.isPlaying || EditorApplication.isPaused) {
-					status = "Continuous shot is enabled on PlayMode only!";
-					statusType = StatusType.Warning;
-					recording = false;
-				}
+		status = "Idle...";
+		statusType = StatusType.None;
+	}
+
+	public void StartRecording () {
+		isRecording = true;
+
+		if (oneShot) {
+			Capture ();
+			isRecording = false;
+		}
+		else {
+			if (!Application.isPlaying || EditorApplication.isPaused) {
+				status = "Only 'One Shot' is enabled when not in play mode!";
+				statusType = StatusType.Warning;
+				isRecording = false;
 			} else {
-				// One Shot
-				Capture ();
-				recording = false;
+				Time.captureFramerate = framerate;
 			}
-		} else {
-			status = "Idle...";
-			statusType = StatusType.None;
 		}
 	}
 
 	void Update () {
-		if (recording) {
-			if (accum >= delay * 0.01f) {
-				Capture ();
-				accum = 0;
-			}
-			accum += Time.deltaTime;
+		if (isRecording) {
+			Capture ();
 		}
 	}
 
@@ -79,10 +79,10 @@ public class PlayRecorderEditor : Editor {
 	SerializedProperty nameFormatProp;
 	SerializedProperty extensionProp;
 
-	SerializedProperty continuousProp;
+	SerializedProperty oneShotProp;
 	SerializedProperty delayProp;
 
-	SerializedProperty recordingProp;
+	SerializedProperty isRecordingProp;
 
 	SerializedProperty statusProp;
 	SerializedProperty statusTypeProp;
@@ -98,10 +98,10 @@ public class PlayRecorderEditor : Editor {
 		nameFormatProp = serializedObject.FindProperty("nameFormat");
 		extensionProp = serializedObject.FindProperty("extension");
 
-		continuousProp = serializedObject.FindProperty("continuous");
+		oneShotProp = serializedObject.FindProperty("oneShot");
 		delayProp = serializedObject.FindProperty("delay");
 
-		recordingProp = serializedObject.FindProperty("recording");
+		isRecordingProp = serializedObject.FindProperty("isRecording");
 
 		statusProp = serializedObject.FindProperty("status");
 		statusTypeProp = serializedObject.FindProperty("statusType");
@@ -129,7 +129,6 @@ public class PlayRecorderEditor : Editor {
 		EditorGUILayout.LabelField ("Extension :", extension);
 		
 		if (GUILayout.Button ("Edit")) {
-			
 			string fullPath = EditorUtility.SaveFilePanel ("Save Capture", directory, nameFormat, extension);
 			UpdatePathInfo (fullPath);
 		}
@@ -157,14 +156,19 @@ public class PlayRecorderEditor : Editor {
 
 	void DrawRecorder () {
 		GUILayout.Label ("Record Settings", EditorStyles.boldLabel);
-		
-		continuousProp.boolValue = EditorGUILayout.BeginToggleGroup ("Continuous Shot :", continuousProp.boolValue);
-		delayProp.floatValue = EditorGUILayout.FloatField ("Delay(ms) :", delayProp.floatValue);
-		EditorGUILayout.EndToggleGroup ();
 
-		bool recording = recordingProp.boolValue;
-		if (GUILayout.Button (recording ? "Stop" : "Record")) {
-			target.StartRecording(!recording);
+		delayProp.floatValue = EditorGUILayout.FloatField ("Delay (FR:" + target.framerate + ") :", delayProp.floatValue);
+		oneShotProp.boolValue = EditorGUILayout.Toggle ("One Shot : ", oneShotProp.boolValue);
+
+		if (isRecordingProp.boolValue) {
+			if (GUILayout.Button ("Stop")) {
+				target.StopRecording ();
+			}
+		} else {
+			string btnStr = oneShotProp.boolValue ? "One Shot" : "Start Recording";
+			if (GUILayout.Button (btnStr)) {
+				target.StartRecording ();
+			}
 		}
 		
 		EditorGUILayout.HelpBox ("Status : " + statusProp.stringValue,
