@@ -33,6 +33,7 @@ public class PlayRecorder : MonoBehaviour {
 
 	public void StopRecording () {
 		isRecording = false;
+		Time.captureFramerate = 0;
 		
 		status = "Idle...";
 		statusType = StatusType.None;
